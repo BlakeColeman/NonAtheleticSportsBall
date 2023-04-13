@@ -6,49 +6,50 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-public class Pointer : MonoBehaviour
+public class MenuPointer : MonoBehaviour
 {
     public Button button1;
     public Button button2;
+
     public LineRenderer Line;
+
     public TMP_Text  textbox;
-    public Rigidbody Ball;
-    Rigidbody clone;
-    private IEnumerator coroutine;
+
     // Start is called before the first frame update
     void Start()
     {
         
     }
 
+    // Update is called once per frame
     void Update()
     {
         Line.SetPosition(0, transform.position);
-        Line.SetPosition(1, transform.position + (transform.up * 15));
+        Line.SetPosition(1, transform.position + (transform.forward * 20));
         RaycastHit hit;
-        Ray ray = new Ray(transform.position,transform.up);
+        Ray ray = new Ray(transform.position,transform.forward);
         Physics.Raycast(ray,out hit);
         
-        
-        coroutine = NewBall();
-
-
         if(hit.collider)
         {
-            if(hit.collider.CompareTag("button"))
+            if(hit.collider.CompareTag("button1"))
             {
                 button1.Select();
                 if(OVRInput.GetUp(OVRInput.Button.One))
                 {
-                    StartCoroutine(coroutine);
+                    
+                    SceneManager.LoadScene("Scenes/Level1",LoadSceneMode.Single);
+                    textbox.text = "Loading";
                 }
             }
-            if(hit.collider.CompareTag("button2"))
+            else if(hit.collider.CompareTag("button2"))
             {
                 button2.Select();
                 if(OVRInput.GetUp(OVRInput.Button.One))
                 {
-                    SceneManager.LoadScene("Scenes/Menu",LoadSceneMode.Single);
+                    
+                    SceneManager.LoadScene("Scenes/Level2",LoadSceneMode.Single);
+                    textbox.text = "Loading";
                 }
             }
         }
@@ -56,18 +57,5 @@ public class Pointer : MonoBehaviour
         {
             EventSystem.current.SetSelectedGameObject(null);
         }
-    }
-
-    IEnumerator NewBall()
-    {
-        textbox.text = "3";
-        yield return new WaitForSeconds(1);
-        textbox.text = "2";
-        yield return new WaitForSeconds(1);
-        textbox.text = "1";
-        yield return new WaitForSeconds(1);
-        textbox.text = "0";
-        clone = Instantiate(Ball, new Vector3(-5,2f,-1),Quaternion.identity);
-        clone.velocity = new Vector3(9,1,0);
     }
 }
